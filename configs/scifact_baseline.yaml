@@ -1,7 +1,0 @@
-dataset: scifact
-split: test
-judge: none
-retrieve_k: 100        # candidates fetched by the retriever
-rerank_k: 20           # how many of those an expensive judge rescores (Stage 2)
-metrics: [ndcg@10, recall@100, mrr@10]
-seed: 42

@@ -1,0 +1,16 @@
+dataset: scifact
+split: test
+retriever: bm25
+bm25:
+  k1: 1.5
+  b: 0.75
+  method: lucene
+  stemmer: english       # PyStemmer language
+  stopwords: en
+judge: none            # not used yet (reranker stage)
+retrieve_k: 100        # candidates fetched by the retriever
+rerank_k: 20           # how many of those an expensive judge rescores (Stage 2, not used yet)
+metrics: [ndcg@10, recall@100, mrr@10]
+seed: 42               # not used yet
+num_threads: 4         # torch threads (dense only); fixed so latency is comparable
+warmup_queries: 5      # run first, not timed

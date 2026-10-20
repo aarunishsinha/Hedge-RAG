@@ -1,0 +1,16 @@
+dataset: scifact
+split: test
+retriever: dense
+dense:
+  model: BAAI/bge-small-en-v1.5
+  revision: 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a   # pinned HF commit (2024-02-22)
+  query_prefix: "Represent this sentence for searching relevant passages: "
+  max_seq_length: 512
+  batch_size: 64       # only affects build speed, not results practically
+judge: none            # not used yet (reranker stage)
+retrieve_k: 100        # candidates fetched by the retriever
+rerank_k: 20           # how many of those an expensive judge rescores (Stage 2, not used yet)
+metrics: [ndcg@10, recall@100, mrr@10]
+seed: 42               # not used yet
+num_threads: 4         # torch threads (dense only); fixed so latency is comparable
+warmup_queries: 5      # run first, not timed

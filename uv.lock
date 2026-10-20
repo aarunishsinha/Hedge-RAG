@@ -242,6 +242,7 @@ dependencies = [
     { name = "ranx", marker = "sys_platform == 'linux'" },
     { name = "sentence-transformers", marker = "sys_platform == 'linux'" },
     { name = "torch", marker = "sys_platform == 'linux'" },
+    { name = "tqdm", marker = "sys_platform == 'linux'" },
 ]
 
 [package.metadata]
@@ -255,6 +256,7 @@ requires-dist = [
     { name = "ranx" },
     { name = "sentence-transformers" },
     { name = "torch", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "tqdm" },
 ]
 
 [[package]]

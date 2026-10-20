@@ -1,0 +1,24 @@
+# Every container started from here mounts the same named volumes, so stored
+# indexes (/data/indexes) and downloaded models survive container restarts.
+#
+#   docker compose run --rm hedge-rag python -m harness.run configs/scifact_bm25.yaml
+#   docker compose run --rm hedge-rag pytest -q
+services:
+  hedge-rag:
+    build: .
+    image: hedge-rag
+    working_dir: /app
+    environment:
+      # Read models only from hf-cache, never the network, so runs are consistent.
+      # To download a new model once: docker compose run --rm -e HF_HUB_OFFLINE=0 hedge-rag ...
+      HF_HUB_OFFLINE: "1"
+    volumes:
+      - .:/app                                  # live code
+      - ir-data:/data                           # datasets + stored indexes
+      - hf-cache:/root/.cache/huggingface       # downloaded models
+
+volumes:
+  ir-data:
+    name: ir-data                               # reuse the existing volume, no project prefix
+  hf-cache:
+    name: hf-cache
