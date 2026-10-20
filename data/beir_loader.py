@@ -21,16 +21,32 @@ def _download(name: str) -> Path:
 
 def load(name: str, split: str = "test") -> Dataset:
     root = _download(name)
+
+    # Relevance labels: one row per (query, doc, relevance)
     qrels: dict[str, dict[str, int]] = {}
     with open(root / "qrels" / f"{split}.tsv") as f:
         rows = csv.reader(f, delimiter="\t")
         next(rows)                                    # skip header
-        for qid, did, rel in rows:
-            qrels.setdefault(qid, {})[did] = int(rel)
+        for query_id, doc_id, relevance in rows:
+            if query_id not in qrels:
+                qrels[query_id] = {}
+            qrels[query_id][doc_id] = int(relevance)
+
+    # Queries: one JSON object per line
+    queries: dict[str, str] = {}
     with open(root / "queries.jsonl") as f:
-        queries = {str(q["_id"]): q["text"] for q in map(json.loads, f)
-                   if str(q["_id"]) in qrels}         # keep this split only
+        for line in f:
+            query = json.loads(line)
+            query_id = str(query["_id"])
+            if query_id in qrels:                     # keep this split only
+                queries[query_id] = query["text"]
+
+    # Corpus: one JSON object per line
+    corpus: dict[str, dict] = {}
     with open(root / "corpus.jsonl") as f:
-        corpus = {str(d["_id"]): {"title": d.get("title", ""), "text": d["text"]}
-                  for d in map(json.loads, f)}
+        for line in f:
+            doc = json.loads(line)
+            doc_id = str(doc["_id"])
+            corpus[doc_id] = {"title": doc.get("title", ""), "text": doc["text"]}
+
     return Dataset(corpus, queries, qrels)
